@@ -7,7 +7,7 @@ public interface IPessoaRepository
 {
     Task<Pessoa> CreatePessoaAsync(Pessoa pessoa);
     Task<PaginatedResult<Pessoa>> GetPessoasAsync(ListPessoas listPessoas);
-    Task<Pessoa> FindPessoaByIdAsync(decimal pessoaId);
+    Task<Pessoa?> FindPessoaByIdAsync(Guid pessoaId);
     Task UpdatePessoaAsync(Pessoa pessoa);
-    Task DeletePessoaAsync(decimal pessoaId);
+    Task DeletePessoaAsync(Guid pessoaId);
 }

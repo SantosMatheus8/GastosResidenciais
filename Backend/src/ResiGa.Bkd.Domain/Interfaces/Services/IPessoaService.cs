@@ -7,7 +7,7 @@ public interface IPessoaService
 {
     Task<Pessoa> CreatePessoaAsync(Pessoa pessoa);
     Task<PaginatedResult<Pessoa>> GetPessoasAsync(ListPessoas listPessoas);
-    Task<Pessoa> FindPessoaByIdAsync(decimal pessoaId);
-    Task<Pessoa> UpdatePessoaAsync(Pessoa updatePessoaRequest, decimal pessoaId);
-    Task DeletePessoaAsync(decimal pessoaId);
+    Task<Pessoa> FindPessoaByIdAsync(Guid pessoaId);
+    Task<Pessoa> UpdatePessoaAsync(Pessoa updatePessoaRequest, Guid pessoaId);
+    Task DeletePessoaAsync(Guid pessoaId);
 }

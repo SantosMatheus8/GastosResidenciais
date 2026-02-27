@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using ResiGa.Bkd.Domain.Exceptions;
 using ResiGa.Bkd.Domain.Interfaces.Repositories;
 using ResiGa.Bkd.Domain.Interfaces.Services;
@@ -21,13 +22,13 @@ public class PessoaService(IPessoaRepository repository, ILogger<PessoaService> 
         return await repository.GetPessoasAsync(listPessoas);
     }
 
-    public async Task<Pessoa> FindPessoaByIdAsync(decimal pessoaId)
+    public async Task<Pessoa> FindPessoaByIdAsync(Guid pessoaId)
     {
         logger.LogInformation("Buscando um Pessoa");
         return await FindPessoaOrThrowExceptionAsync(pessoaId);
     }
 
-    public async Task<Pessoa> UpdatePessoaAsync(Pessoa updatePessoaRequest, decimal pessoaId)
+    public async Task<Pessoa> UpdatePessoaAsync(Pessoa updatePessoaRequest, Guid pessoaId)
     {
         logger.LogInformation("Editando um Pessoa");
 
@@ -40,20 +41,20 @@ public class PessoaService(IPessoaRepository repository, ILogger<PessoaService> 
         return await FindPessoaOrThrowExceptionAsync(pessoaId);
     }
 
-    public async Task DeletePessoaAsync(decimal pessoaId)
+    public async Task DeletePessoaAsync(Guid pessoaId)
     {
         await FindPessoaOrThrowExceptionAsync(pessoaId);
         await repository.DeletePessoaAsync(pessoaId);
     }
 
-    private async Task<Pessoa> FindPessoaOrThrowExceptionAsync(decimal pessoaId)
+    private async Task<Pessoa> FindPessoaOrThrowExceptionAsync(Guid pessoaId)
     {
         Pessoa pessoa = await repository.FindPessoaByIdAsync(pessoaId);
 
         if (pessoa == null)
         {
             logger.LogInformation("Pessoa nao encontrado");
-            throw new NotFoundException("Pessoa não encontrado");
+            throw new NotFoundException("Pessoa não encontrada");
         }
 
         return pessoa;

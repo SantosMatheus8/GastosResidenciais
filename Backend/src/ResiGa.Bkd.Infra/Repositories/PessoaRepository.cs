@@ -6,7 +6,6 @@ using ResiGa.Bkd.Infra.Queries;
 using ResiGa.Bkd.Domain.Models;
 using ResiGa.Bkd.Domain.Utils;
 using ResiGa.Bkd.Domain.Models.Pessoa;
-using ResiGa.Bkd.Domain.Models.User;
 
 namespace ResiGa.Bkd.Infra.Repositories;
 
@@ -46,21 +45,13 @@ public class PessoaRepository(SqlConnection connection, ILogger<PessoaRepository
         var parameters = new
         {
             Id = listPessoas.Id,
-            Nome = pessoa.Nome,
-            Idade = pessoa.Idade,
+            Nome = listPessoas.Nome,
+            Idade = listPessoas.Idade,
             Offset = (listPessoas.Page - 1) * listPessoas.ItemsPerPage,
             listPessoas.ItemsPerPage
         };
 
-        var result = await connection.QueryAsync<Pessoa>(
-            query,
-            (pessoa, user) =>
-            {
-                pessoa.User = user;
-                return pessoa;
-            },
-            parameters
-        );
+        var result = await connection.QueryAsync<Pessoa>(query, parameters);
 
         var totalLines = await connection.QuerySingleAsync<int>(countQuery, parameters);
 
@@ -94,22 +85,18 @@ public class PessoaRepository(SqlConnection connection, ILogger<PessoaRepository
     {
         if (!string.IsNullOrEmpty(listPessoas.Nome))
             query += " AND LOWER(b.Nome) COLLATE Latin1_General_CI_AI LIKE '%' + @Nome + '%' ";
-        if (listPessoas.Idade.HasValue)
+        if (listPessoas.Idade > 0)
             query += " AND b.Idade = @Idade ";
         return query;
     }
 
-    public async Task<Pessoa> FindPessoaByIdAsync(decimal pessoaId, decimal userId)
+    public async Task<Pessoa?> FindPessoaByIdAsync(Guid pessoaId)
     {
         logger.LogInformation("Query executada: {Sql}.", PessoaQueries.FindPessoaById);
 
         var result = await connection.QueryAsync<Pessoa>(
             PessoaQueries.FindPessoaById,
-            (pessoa) =>
-            {
-                return pessoa;
-            },
-            new { PessoaId = pessoaId}
+            new { PessoaId = pessoaId }
         );
 
         var pessoa = result.FirstOrDefault();
@@ -126,7 +113,7 @@ public class PessoaRepository(SqlConnection connection, ILogger<PessoaRepository
         try
         {
             logger.LogInformation("Query executada: {Sql}.", PessoaQueries.UpdatePessoa);
-            var response = await connection.ExecuteAsync(PessoaQueries.UpdatePessoa,
+            await connection.ExecuteAsync(PessoaQueries.UpdatePessoa,
                 new
                 {
                     PessoaId = pessoa.Id,
@@ -144,14 +131,14 @@ public class PessoaRepository(SqlConnection connection, ILogger<PessoaRepository
         }
     }
 
-    public async Task DeletePessoaAsync(decimal pessoaId)
+    public async Task DeletePessoaAsync(Guid pessoaId)
     {
         await connection.OpenAsync();
         var transaction = await connection.BeginTransactionAsync();
         try
         {
             logger.LogInformation("Query executada: {Sql}.", PessoaQueries.DeletePessoa);
-            var response = await connection.ExecuteAsync(PessoaQueries.DeletePessoa,
+            await connection.ExecuteAsync(PessoaQueries.DeletePessoa,
                 new
                 {
                     PessoaId = pessoaId

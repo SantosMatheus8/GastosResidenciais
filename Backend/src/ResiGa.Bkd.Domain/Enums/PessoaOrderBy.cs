@@ -6,11 +6,11 @@ namespace ResiGa.Bkd.Domain.Enums;
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum PessoaOrderBy
 {
-    [Description("p.Id")]
+    [Description("b.Id")]
     Id,
-    [Description("p.Nome")]
+    [Description("b.Nome")]
     Nome,
-    [Description("p.Idade")]
+    [Description("b.Idade")]
     Idade,
 }
 

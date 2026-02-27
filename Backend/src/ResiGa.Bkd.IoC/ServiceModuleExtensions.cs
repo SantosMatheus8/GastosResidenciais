@@ -1,10 +1,11 @@
-﻿using Microsoft.Extensions.DependencyInjection.Extensions;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using System.Diagnostics.CodeAnalysis;
 using ResiGa.Bkd.Domain.Interfaces.Repositories;
 using ResiGa.Bkd.Domain.Interfaces.Services;
 using ResiGa.Bkd.Service;
 using ResiGa.Bkd.Infra.Repositories;
-using ResiGa.Application.Services;
 
 namespace ResiGa.Bkd.Ioc;
 

@@ -1,18 +1,14 @@
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ResiGa.Bkd.Api.Dtos.Pessoa;
 using ResiGa.Bkd.Domain.Interfaces.Services;
 using ResiGa.Bkd.Domain.Models;
 using Mapster;
 using ResiGa.Bkd.Domain.Models.Pessoa;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
 
 namespace ResiGa.Bkd.Api.Controllers;
 
 [Route("v1/[controller]")]
 [ApiController]
-[Authorize]
 public class PessoaController(IPessoaService pessoaService) : ControllerBase
 {
     /// <summary>
@@ -57,21 +53,21 @@ public class PessoaController(IPessoaService pessoaService) : ControllerBase
     /// <param name="pessoaId">O codigo Pessoa</param>
     /// <returns>O Pessoa consultado</returns>
     /// <response code="200">Sucesso, e retorna um Pessoa</response>
-    [HttpGet("{pessoaId:decimal}")]
+    [HttpGet("{pessoaId:guid}")]
     [ProducesResponseType(typeof(PessoaResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<PessoaResponse>> FindPessoaById([FromRoute] decimal pessoaId)
+    public async Task<ActionResult<PessoaResponse>> FindPessoaById([FromRoute] Guid pessoaId)
     {
         Pessoa pessoa = await pessoaService.FindPessoaByIdAsync(pessoaId);
         var pessoaResponse = pessoa.Adapt<PessoaResponse>();
         return Ok(pessoaResponse);
     }
 
-    [HttpPut("{pessoaId:decimal}")]
+    [HttpPut("{pessoaId:guid}")]
     [ProducesResponseType(typeof(PessoaResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PessoaResponse>> UpdatePessoa([FromBody] UpdatePessoaRequest updatePessoaRequest,
-        [FromRoute] decimal pessoaId)
+        [FromRoute] Guid pessoaId)
     {
         var pessoa = updatePessoaRequest.Adapt<Pessoa>();
         Pessoa updatedPessoa = await pessoaService.UpdatePessoaAsync(pessoa, pessoaId);
@@ -85,10 +81,10 @@ public class PessoaController(IPessoaService pessoaService) : ControllerBase
     /// <param name="pessoaId">O codigo do pessoa</param>
     /// <returns>Confirmação de deleção</returns>
     /// <response code="204">Sucesso, e retorna confirmação de deleção</response>
-    [HttpDelete("{pessoaId:decimal}")]
+    [HttpDelete("{pessoaId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
-    public async Task<ActionResult> DeletePessoa([FromRoute] decimal pessoaId)
+    public async Task<ActionResult> DeletePessoa([FromRoute] Guid pessoaId)
     {
         await pessoaService.DeletePessoaAsync(pessoaId);
         return NoContent();
