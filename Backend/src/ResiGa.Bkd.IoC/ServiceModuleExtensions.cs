@@ -17,5 +17,9 @@ public static class ServiceModuleExtensions
         services.TryAddSingleton(configuration);
         services.AddScoped<IPessoaService, PessoaService>();
         services.AddScoped<IPessoaRepository, PessoaRepository>();
+        services.AddScoped<ICategoriaService, CategoriaService>();
+        services.AddScoped<ICategoriaRepository, CategoriaRepository>();
+        services.AddScoped<ITransacaoService, TransacaoService>();
+        services.AddScoped<ITransacaoRepository, TransacaoRepository>();
     }
 }
