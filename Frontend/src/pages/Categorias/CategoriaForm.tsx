@@ -5,6 +5,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { categoriaApi } from '../../services/api'
+import { PageHeader, Input, Select, Button, ErrorAlert } from '../../components/ui'
 
 // Validação Zod para Categoria
 const categoriaSchema = z.object({
@@ -45,9 +46,7 @@ export default function CategoriaForm() {
   })
 
   useEffect(() => {
-    if (categoria) {
-      reset({ descricao: categoria.descricao, finalidade: categoria.finalidade })
-    }
+    if (categoria) reset({ descricao: categoria.descricao, finalidade: categoria.finalidade })
   }, [categoria, reset])
 
   const mutation = useMutation({
@@ -57,69 +56,43 @@ export default function CategoriaForm() {
       queryClient.invalidateQueries({ queryKey: ['categorias'] })
       navigate('/categorias')
     },
-    onError: (err: Error) => {
-      setError('root', { message: err.message })
-    },
+    onError: (err: Error) => setError('root', { message: err.message }),
   })
 
   return (
     <div className="max-w-lg">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">
-        {isEditing ? 'Editar Categoria' : 'Nova Categoria'}
-      </h2>
+      <PageHeader title={isEditing ? 'Editar Categoria' : 'Nova Categoria'} />
 
       <form
         onSubmit={handleSubmit((data) => mutation.mutate(data))}
         className="bg-white rounded-lg shadow p-6 space-y-4"
       >
-        {errors.root && (
-          <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-            {errors.root.message}
-          </div>
-        )}
+        <ErrorAlert message={errors.root?.message} />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
-          <input
-            {...register('descricao')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="Descrição da categoria"
-          />
-          {errors.descricao && (
-            <p className="mt-1 text-sm text-red-600">{errors.descricao.message}</p>
-          )}
-        </div>
+        <Input
+          label="Descrição"
+          placeholder="Descrição da categoria"
+          error={errors.descricao?.message}
+          {...register('descricao')}
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Finalidade</label>
-          <select
-            {...register('finalidade', { valueAsNumber: true })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value={0}>Despesa</option>
-            <option value={1}>Receita</option>
-            <option value={2}>Ambas</option>
-          </select>
-          {errors.finalidade && (
-            <p className="mt-1 text-sm text-red-600">{errors.finalidade.message}</p>
-          )}
-        </div>
+        <Select
+          label="Finalidade"
+          error={errors.finalidade?.message}
+          {...register('finalidade', { valueAsNumber: true })}
+        >
+          <option value={0}>Despesa</option>
+          <option value={1}>Receita</option>
+          <option value={2}>Ambas</option>
+        </Select>
 
         <div className="flex gap-3 pt-2">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium disabled:opacity-50"
-          >
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Salvando...' : 'Salvar'}
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/categorias')}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium"
-          >
+          </Button>
+          <Button variant="secondary" type="button" onClick={() => navigate('/categorias')}>
             Cancelar
-          </button>
+          </Button>
         </div>
       </form>
     </div>

@@ -1,0 +1,9 @@
+// Barrel export — importação centralizada dos componentes UI
+export { Button, LinkButton } from './Button'
+export { default as Input } from './Input'
+export { default as Select } from './Select'
+export { Badge, FinalidadeBadge, TipoBadge } from './Badge'
+export { default as DataTable, type Column } from './DataTable'
+export { default as PageHeader } from './PageHeader'
+export { default as ErrorAlert } from './ErrorAlert'
+export { default as Card } from './Card'

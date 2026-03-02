@@ -1,6 +1,8 @@
 import { useQuery } from '@tanstack/react-query'
 import { pessoaApi } from '../../services/api'
 import { formatCurrency } from '../../utils/format'
+import { PageHeader, DataTable, type Column } from '../../components/ui'
+import type { TotalPorPessoa } from '../../types'
 
 export default function TotaisPorPessoa() {
   const { data, isLoading } = useQuery({
@@ -8,66 +10,51 @@ export default function TotaisPorPessoa() {
     queryFn: pessoaApi.totais,
   })
 
+  const columns: Column<TotalPorPessoa>[] = [
+    { header: 'Pessoa', accessor: (i) => i.nome, cellClassName: 'font-medium text-gray-900' },
+    {
+      header: 'Total Receitas',
+      headerClassName: 'text-right',
+      cellClassName: 'text-right text-green-600',
+      accessor: (i) => formatCurrency(i.totalReceitas),
+    },
+    {
+      header: 'Total Despesas',
+      headerClassName: 'text-right',
+      cellClassName: 'text-right text-red-600',
+      accessor: (i) => formatCurrency(i.totalDespesas),
+    },
+    {
+      header: 'Saldo',
+      headerClassName: 'text-right',
+      cellClassName: (i) => `text-right font-semibold ${i.saldo >= 0 ? 'text-green-600' : 'text-red-600'}`,
+      accessor: (i) => formatCurrency(i.saldo),
+    },
+  ]
+
+  // Linha de totais gerais renderizada como rodapé da tabela
+  const footer = data && (
+    <tr className="bg-gray-100 font-bold">
+      <td className="px-6 py-4 text-sm text-gray-900">Total Geral</td>
+      <td className="px-6 py-4 text-sm text-right text-green-700">{formatCurrency(data.totalGeralReceitas)}</td>
+      <td className="px-6 py-4 text-sm text-right text-red-700">{formatCurrency(data.totalGeralDespesas)}</td>
+      <td className={`px-6 py-4 text-sm text-right ${data.saldoLiquido >= 0 ? 'text-green-700' : 'text-red-700'}`}>
+        {formatCurrency(data.saldoLiquido)}
+      </td>
+    </tr>
+  )
+
   return (
     <div>
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Totais por Pessoa</h2>
+      <PageHeader title="Totais por Pessoa" />
 
-      {isLoading ? (
-        <p className="text-gray-500">Carregando...</p>
-      ) : (
-        <div className="bg-white rounded-lg shadow overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Pessoa</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total Receitas</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total Despesas</th>
-                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Saldo</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-gray-200">
-              {data?.itens.map((item) => (
-                <tr key={item.pessoaId} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-sm font-medium text-gray-900">{item.nome}</td>
-                  <td className="px-6 py-4 text-sm text-right text-green-600">
-                    {formatCurrency(item.totalReceitas)}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-right text-red-600">
-                    {formatCurrency(item.totalDespesas)}
-                  </td>
-                  <td
-                    className={`px-6 py-4 text-sm text-right font-semibold ${
-                      item.saldo >= 0 ? 'text-green-600' : 'text-red-600'
-                    }`}
-                  >
-                    {formatCurrency(item.saldo)}
-                  </td>
-                </tr>
-              ))}
-
-              {/* Linha de totais gerais */}
-              {data && (
-                <tr className="bg-gray-100 font-bold">
-                  <td className="px-6 py-4 text-sm text-gray-900">Total Geral</td>
-                  <td className="px-6 py-4 text-sm text-right text-green-700">
-                    {formatCurrency(data.totalGeralReceitas)}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-right text-red-700">
-                    {formatCurrency(data.totalGeralDespesas)}
-                  </td>
-                  <td
-                    className={`px-6 py-4 text-sm text-right ${
-                      data.saldoLiquido >= 0 ? 'text-green-700' : 'text-red-700'
-                    }`}
-                  >
-                    {formatCurrency(data.saldoLiquido)}
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      )}
+      <DataTable
+        columns={columns}
+        data={data?.itens ?? []}
+        keyExtractor={(i) => i.pessoaId}
+        isLoading={isLoading}
+        footer={footer}
+      />
     </div>
   )
 }

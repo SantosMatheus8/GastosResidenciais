@@ -6,6 +6,7 @@ import { z } from 'zod'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { transacaoApi, pessoaApi, categoriaApi } from '../../services/api'
 import { Finalidade, TipoTransacao } from '../../types'
+import { PageHeader, Input, Select, Button, ErrorAlert } from '../../components/ui'
 
 // Validação Zod para Transação
 const transacaoSchema = z.object({
@@ -38,13 +39,7 @@ export default function TransacaoForm() {
     setError,
   } = useForm<TransacaoFormData>({
     resolver: zodResolver(transacaoSchema),
-    defaultValues: {
-      descricao: '',
-      valor: 0,
-      tipo: 0,
-      categoriaId: '',
-      pessoaId: '',
-    },
+    defaultValues: { descricao: '', valor: 0, tipo: 0, categoriaId: '', pessoaId: '' },
   })
 
   // Observa o campo "tipo" para filtrar categorias compatíveis
@@ -99,115 +94,61 @@ export default function TransacaoForm() {
       queryClient.invalidateQueries({ queryKey: ['transacoes'] })
       navigate('/transacoes')
     },
-    onError: (err: Error) => {
-      setError('root', { message: err.message })
-    },
+    onError: (err: Error) => setError('root', { message: err.message }),
   })
 
   return (
     <div className="max-w-lg">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">
-        {isEditing ? 'Editar Transação' : 'Nova Transação'}
-      </h2>
+      <PageHeader title={isEditing ? 'Editar Transação' : 'Nova Transação'} />
 
       <form
         onSubmit={handleSubmit((data) => mutation.mutate(data))}
         className="bg-white rounded-lg shadow p-6 space-y-4"
       >
-        {errors.root && (
-          <div className="p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-            {errors.root.message}
-          </div>
-        )}
+        <ErrorAlert message={errors.root?.message} />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Descrição</label>
-          <input
-            {...register('descricao')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="Descrição da transação"
-          />
-          {errors.descricao && (
-            <p className="mt-1 text-sm text-red-600">{errors.descricao.message}</p>
-          )}
-        </div>
+        <Input
+          label="Descrição"
+          placeholder="Descrição da transação"
+          error={errors.descricao?.message}
+          {...register('descricao')}
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Valor (R$)</label>
-          <input
-            type="number"
-            step="0.01"
-            {...register('valor', { valueAsNumber: true })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-            placeholder="0,00"
-          />
-          {errors.valor && (
-            <p className="mt-1 text-sm text-red-600">{errors.valor.message}</p>
-          )}
-        </div>
+        <Input
+          label="Valor (R$)"
+          type="number"
+          step="0.01"
+          placeholder="0,00"
+          error={errors.valor?.message}
+          {...register('valor', { valueAsNumber: true })}
+        />
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Tipo</label>
-          <select
-            {...register('tipo', { valueAsNumber: true })}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value={0}>Despesa</option>
-            <option value={1}>Receita</option>
-          </select>
-        </div>
+        <Select label="Tipo" {...register('tipo', { valueAsNumber: true })}>
+          <option value={0}>Despesa</option>
+          <option value={1}>Receita</option>
+        </Select>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Categoria</label>
-          <select
-            {...register('categoriaId')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="">Selecione uma categoria</option>
-            {categoriasFiltradas.map((c) => (
-              <option key={c.id} value={c.id}>
-                {c.descricao}
-              </option>
-            ))}
-          </select>
-          {errors.categoriaId && (
-            <p className="mt-1 text-sm text-red-600">{errors.categoriaId.message}</p>
-          )}
-        </div>
+        <Select label="Categoria" error={errors.categoriaId?.message} {...register('categoriaId')}>
+          <option value="">Selecione uma categoria</option>
+          {categoriasFiltradas.map((c) => (
+            <option key={c.id} value={c.id}>{c.descricao}</option>
+          ))}
+        </Select>
 
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Pessoa</label>
-          <select
-            {...register('pessoaId')}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500"
-          >
-            <option value="">Selecione uma pessoa</option>
-            {pessoas?.lines.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.nome}
-              </option>
-            ))}
-          </select>
-          {errors.pessoaId && (
-            <p className="mt-1 text-sm text-red-600">{errors.pessoaId.message}</p>
-          )}
-        </div>
+        <Select label="Pessoa" error={errors.pessoaId?.message} {...register('pessoaId')}>
+          <option value="">Selecione uma pessoa</option>
+          {pessoas?.lines.map((p) => (
+            <option key={p.id} value={p.id}>{p.nome}</option>
+          ))}
+        </Select>
 
         <div className="flex gap-3 pt-2">
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 text-sm font-medium disabled:opacity-50"
-          >
+          <Button type="submit" disabled={isSubmitting}>
             {isSubmitting ? 'Salvando...' : 'Salvar'}
-          </button>
-          <button
-            type="button"
-            onClick={() => navigate('/transacoes')}
-            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 text-sm font-medium"
-          >
+          </Button>
+          <Button variant="secondary" type="button" onClick={() => navigate('/transacoes')}>
             Cancelar
-          </button>
+          </Button>
         </div>
       </form>
     </div>
