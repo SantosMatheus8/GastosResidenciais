@@ -7,20 +7,33 @@ using ResiGa.Bkd.Domain.Models.Transacao;
 
 namespace ResiGa.Bkd.Api.Controllers;
 
+/// <summary>
+/// Controller responsavel pelos endpoints REST da entidade Transacao.
+/// Aplica regras de negocio: menor de idade e compatibilidade de categoria.
+/// </summary>
 [Route("v1/[controller]")]
 [ApiController]
 public class TransacaoController(ITransacaoService transacaoService) : ControllerBase
 {
     /// <summary>
-    ///     Atraves dessa rota voce sera capaz de criar uma transacao
+    /// Cria uma nova transacao no sistema.
+    /// Validacoes aplicadas:
+    /// - Descricao obrigatoria (max 400 chars)
+    /// - Valor deve ser positivo
+    /// - Tipo deve ser 0 (Despesa) ou 1 (Receita)
+    /// - REGRA: Pessoa menor de 18 anos so pode ter Despesas
+    /// - REGRA: Categoria deve ser compativel com o Tipo da transacao
     /// </summary>
-    /// <param name="createTransacaoRequest">O objeto de requisicao para criar uma transacao</param>
-    /// <returns>A transacao criada</returns>
-    /// <response code="201">Sucesso, e retorna uma transacao</response>
+    /// <param name="createTransacaoRequest">Dados da transacao a ser criada</param>
+    /// <returns>A transacao criada com Id gerado</returns>
+    /// <response code="200">Sucesso, retorna a transacao criada</response>
+    /// <response code="404">Pessoa ou Categoria nao encontrada</response>
+    /// <response code="422">Erro de validacao ou violacao de regra de negocio</response>
     [HttpPost]
-    [ProducesResponseType(typeof(TransacaoResponse), StatusCodes.Status201Created)]
+    [ProducesResponseType(typeof(TransacaoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<TransacaoResponse>> CreateTransacao([FromBody] CreateTransacaoRequest createTransacaoRequest)
     {
         var transacao = createTransacaoRequest.Adapt<Transacao>();
@@ -30,15 +43,15 @@ public class TransacaoController(ITransacaoService transacaoService) : Controlle
     }
 
     /// <summary>
-    ///     Atraves dessa rota voce sera capaz de buscar uma lista paginada de transacoes
+    /// Lista transacoes com suporte a filtros e paginacao.
+    /// Permite filtrar por Descricao, Tipo, CategoriaId e PessoaId.
     /// </summary>
-    /// <param name="listTransacoesRequest">O objeto de requisicao para buscar a lista paginada de transacoes</param>
-    /// <returns>Uma lista paginada de transacoes</returns>
-    /// <response code="200">Sucesso, e retorna uma lista paginada de transacoes</response>
+    /// <param name="listTransacoesRequest">Filtros e parametros de paginacao</param>
+    /// <returns>Lista paginada de transacoes</returns>
+    /// <response code="200">Sucesso, retorna lista paginada</response>
     [HttpGet]
     [ProducesResponseType(typeof(PaginatedResult<TransacaoResponse>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
     public async Task<ActionResult<PaginatedResult<TransacaoResponse>>> GetTransacoes([FromQuery] ListTransacoesRequest listTransacoesRequest)
     {
         var listTransacoes = listTransacoesRequest.Adapt<ListTransacoes>();
@@ -48,11 +61,12 @@ public class TransacaoController(ITransacaoService transacaoService) : Controlle
     }
 
     /// <summary>
-    ///     Atraves dessa rota voce sera capaz de buscar uma Transacao
+    /// Busca uma transacao pelo seu Id unico.
     /// </summary>
-    /// <param name="transacaoId">O codigo da Transacao</param>
-    /// <returns>A Transacao consultada</returns>
-    /// <response code="200">Sucesso, e retorna uma Transacao</response>
+    /// <param name="transacaoId">Id da transacao</param>
+    /// <returns>Dados da transacao</returns>
+    /// <response code="200">Sucesso, retorna a transacao</response>
+    /// <response code="404">Transacao nao encontrada</response>
     [HttpGet("{transacaoId:guid}")]
     [ProducesResponseType(typeof(TransacaoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
@@ -63,9 +77,20 @@ public class TransacaoController(ITransacaoService transacaoService) : Controlle
         return Ok(transacaoResponse);
     }
 
+    /// <summary>
+    /// Atualiza os dados de uma transacao existente.
+    /// Reaplica todas as validacoes e regras de negocio na atualizacao.
+    /// </summary>
+    /// <param name="updateTransacaoRequest">Novos dados da transacao</param>
+    /// <param name="transacaoId">Id da transacao a ser atualizada</param>
+    /// <returns>Transacao atualizada</returns>
+    /// <response code="200">Sucesso, retorna a transacao atualizada</response>
+    /// <response code="404">Transacao, Pessoa ou Categoria nao encontrada</response>
+    /// <response code="422">Erro de validacao ou violacao de regra de negocio</response>
     [HttpPut("{transacaoId:guid}")]
     [ProducesResponseType(typeof(TransacaoResponse), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(StatusCodes.Status422UnprocessableEntity)]
     public async Task<ActionResult<TransacaoResponse>> UpdateTransacao([FromBody] UpdateTransacaoRequest updateTransacaoRequest,
         [FromRoute] Guid transacaoId)
     {
@@ -76,11 +101,12 @@ public class TransacaoController(ITransacaoService transacaoService) : Controlle
     }
 
     /// <summary>
-    ///     Atraves dessa rota voce sera capaz de deletar uma transacao
+    /// Deleta uma transacao pelo Id.
     /// </summary>
-    /// <param name="transacaoId">O codigo da transacao</param>
-    /// <returns>Confirmação de deleção</returns>
-    /// <response code="204">Sucesso, e retorna confirmação de deleção</response>
+    /// <param name="transacaoId">Id da transacao a ser deletada</param>
+    /// <returns>Confirmacao de delecao (sem conteudo)</returns>
+    /// <response code="204">Sucesso, transacao deletada</response>
+    /// <response code="404">Transacao nao encontrada</response>
     [HttpDelete("{transacaoId:guid}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]

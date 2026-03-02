@@ -1,5 +1,8 @@
 namespace ResiGa.Bkd.Infra.Queries;
 
+/// <summary>
+/// Queries SQL para operacoes CRUD da entidade Categoria.
+/// </summary>
 public static class CategoriaQueries
 {
     public const string CreateCategoria = @"
@@ -34,7 +37,33 @@ public static class CategoriaQueries
             Finalidade = @Finalidade
         WHERE Id = @CategoriaId";
 
+    /// <summary>
+    /// Deleta todas as transacoes associadas a uma categoria.
+    /// Deve ser executado ANTES de DeleteCategoria para garantir a delecao em cascata.
+    /// </summary>
+    public const string DeleteTransacoesByCategoriaId = @"
+        DELETE FROM Transacoes
+        WHERE CategoriaId = @CategoriaId";
+
+    /// <summary>
+    /// Deleta uma categoria pelo seu Id.
+    /// IMPORTANTE: deve ser executado APOS DeleteTransacoesByCategoriaId para manter integridade.
+    /// </summary>
     public const string DeleteCategoria = @"
         DELETE FROM Categorias
         WHERE Id = @CategoriaId";
+
+    public const string TotaisPorCategoria = @"
+        SELECT
+            c.Id AS CategoriaId,
+            c.Descricao,
+            c.Finalidade,
+            ISNULL(SUM(CASE WHEN t.Tipo = 1 THEN t.Valor ELSE 0 END), 0) AS TotalReceitas,
+            ISNULL(SUM(CASE WHEN t.Tipo = 0 THEN t.Valor ELSE 0 END), 0) AS TotalDespesas,
+            ISNULL(SUM(CASE WHEN t.Tipo = 1 THEN t.Valor ELSE 0 END), 0)
+            - ISNULL(SUM(CASE WHEN t.Tipo = 0 THEN t.Valor ELSE 0 END), 0) AS Saldo
+        FROM Categorias c WITH(NOLOCK)
+        LEFT JOIN Transacoes t WITH(NOLOCK) ON t.CategoriaId = c.Id
+        GROUP BY c.Id, c.Descricao, c.Finalidade
+        ORDER BY c.Descricao";
 }
