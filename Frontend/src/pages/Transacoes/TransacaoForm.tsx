@@ -2,27 +2,11 @@ import { useEffect, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useForm, useWatch } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { transacaoApi, pessoaApi, categoriaApi } from '../../services/api'
+import { transacaoSchema, type TransacaoFormData } from '../../schemas'
 import { Finalidade, TipoTransacao } from '../../types'
 import { PageHeader, Input, Select, Button, ErrorAlert } from '../../components/ui'
-
-// Validação Zod para Transação
-const transacaoSchema = z.object({
-  descricao: z
-    .string()
-    .min(1, 'Descrição é obrigatória')
-    .max(400, 'Descrição deve ter no máximo 400 caracteres'),
-  valor: z
-    .number({ invalid_type_error: 'Valor deve ser um número' })
-    .positive('Valor deve ser maior que 0'),
-  tipo: z.coerce.number().int().min(0).max(1),
-  categoriaId: z.string().uuid('Selecione uma categoria'),
-  pessoaId: z.string().uuid('Selecione uma pessoa'),
-})
-
-type TransacaoFormData = z.infer<typeof transacaoSchema>
 
 export default function TransacaoForm() {
   const { id } = useParams()
@@ -33,7 +17,7 @@ export default function TransacaoForm() {
   const {
     register,
     handleSubmit,
-    reset,
+    setValue,
     control,
     formState: { errors, isSubmitting },
     setError,
@@ -75,17 +59,16 @@ export default function TransacaoForm() {
     })
   }, [categorias, tipoSelecionado])
 
+  // Preenche os campos com os dados carregados na edição
   useEffect(() => {
     if (transacao) {
-      reset({
-        descricao: transacao.descricao,
-        valor: transacao.valor,
-        tipo: transacao.tipo,
-        categoriaId: transacao.categoriaId,
-        pessoaId: transacao.pessoaId,
-      })
+      setValue('descricao', transacao.descricao)
+      setValue('valor', transacao.valor)
+      setValue('tipo', transacao.tipo)
+      setValue('categoriaId', transacao.categoriaId)
+      setValue('pessoaId', transacao.pessoaId)
     }
-  }, [transacao, reset])
+  }, [transacao, setValue])
 
   const mutation = useMutation({
     mutationFn: (data: TransacaoFormData) =>

@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
-import Home from './pages/Home'
+import Home from './pages/Home/Home'
 import PessoaList from './pages/Pessoas/PessoaList'
 import PessoaForm from './pages/Pessoas/PessoaForm'
 import CategoriaList from './pages/Categorias/CategoriaList'

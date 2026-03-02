@@ -2,25 +2,10 @@ import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { categoriaApi } from '../../services/api'
+import { categoriaSchema, type CategoriaFormData } from '../../schemas'
 import { PageHeader, Input, Select, Button, ErrorAlert } from '../../components/ui'
-
-// Validação Zod para Categoria
-const categoriaSchema = z.object({
-  descricao: z
-    .string()
-    .min(1, 'Descrição é obrigatória')
-    .max(400, 'Descrição deve ter no máximo 400 caracteres'),
-  finalidade: z.coerce
-    .number()
-    .int()
-    .min(0, 'Finalidade inválida')
-    .max(2, 'Finalidade inválida'),
-})
-
-type CategoriaFormData = z.infer<typeof categoriaSchema>
 
 export default function CategoriaForm() {
   const { id } = useParams()
@@ -31,7 +16,7 @@ export default function CategoriaForm() {
   const {
     register,
     handleSubmit,
-    reset,
+    setValue,
     formState: { errors, isSubmitting },
     setError,
   } = useForm<CategoriaFormData>({
@@ -46,8 +31,11 @@ export default function CategoriaForm() {
   })
 
   useEffect(() => {
-    if (categoria) reset({ descricao: categoria.descricao, finalidade: categoria.finalidade })
-  }, [categoria, reset])
+    if (categoria) {
+      setValue('descricao', categoria.descricao)
+      setValue('finalidade', categoria.finalidade)
+    }
+  }, [categoria, setValue])
 
   const mutation = useMutation({
     mutationFn: (data: CategoriaFormData) =>

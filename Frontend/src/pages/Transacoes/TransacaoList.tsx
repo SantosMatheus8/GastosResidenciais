@@ -1,10 +1,9 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { transacaoApi, pessoaApi, categoriaApi } from '../../services/api'
-import { formatCurrency } from '../../utils/format'
-import { PageHeader, LinkButton, Button, DataTable, ErrorAlert, TipoBadge, type Column } from '../../components/ui'
+import { PageHeader, LinkButton, DataTable, ErrorAlert } from '../../components/ui'
+import { getTransacaoColumns } from '../../columns'
 import ConfirmDialog from '../../components/ConfirmDialog'
-import type { Transacao } from '../../types'
 
 export default function TransacaoList() {
   const queryClient = useQueryClient()
@@ -41,32 +40,19 @@ export default function TransacaoList() {
   })
 
   // Mapas para lookup rápido de nomes por ID
-  const pessoaMap = new Map(pessoas?.lines.map((p) => [p.id, p.nome]) ?? [])
-  const categoriaMap = new Map(categorias?.lines.map((c) => [c.id, c.descricao]) ?? [])
+  const pessoaMap = useMemo(
+    () => new Map(pessoas?.lines.map((p) => [p.id, p.nome]) ?? []),
+    [pessoas]
+  )
+  const categoriaMap = useMemo(
+    () => new Map(categorias?.lines.map((c) => [c.id, c.descricao]) ?? []),
+    [categorias]
+  )
 
-  const columns: Column<Transacao>[] = [
-    { header: 'Descrição', accessor: (t) => t.descricao, cellClassName: 'text-gray-900' },
-    { header: 'Pessoa', accessor: (t) => pessoaMap.get(t.pessoaId) ?? '—', cellClassName: 'text-gray-600' },
-    { header: 'Categoria', accessor: (t) => categoriaMap.get(t.categoriaId) ?? '—', cellClassName: 'text-gray-600' },
-    { header: 'Tipo', accessor: (t) => <TipoBadge value={t.tipo} /> },
-    {
-      header: 'Valor',
-      headerClassName: 'text-right',
-      cellClassName: 'text-right font-medium',
-      accessor: (t) => formatCurrency(t.valor),
-    },
-    {
-      header: 'Ações',
-      headerClassName: 'text-right',
-      cellClassName: 'text-right space-x-2',
-      accessor: (t) => (
-        <>
-          <LinkButton to={`/transacoes/${t.id}/editar`} variant="ghost-primary">Editar</LinkButton>
-          <Button variant="ghost-danger" onClick={() => setDeleteId(t.id)}>Excluir</Button>
-        </>
-      ),
-    },
-  ]
+  const columns = useMemo(
+    () => getTransacaoColumns(pessoaMap, categoriaMap, setDeleteId),
+    [pessoaMap, categoriaMap]
+  )
 
   return (
     <div>

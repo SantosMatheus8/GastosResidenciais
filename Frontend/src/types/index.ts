@@ -11,7 +11,6 @@ export enum TipoTransacao {
   Receita = 1,
 }
 
-// Labels para exibição dos enums
 export const FinalidadeLabel: Record<number, string> = {
   [Finalidade.Despesa]: 'Despesa',
   [Finalidade.Receita]: 'Receita',

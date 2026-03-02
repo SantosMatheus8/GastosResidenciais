@@ -2,24 +2,10 @@ import { useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { pessoaApi } from '../../services/api'
+import { pessoaSchema, type PessoaFormData } from '../../schemas'
 import { PageHeader, Input, Button, ErrorAlert } from '../../components/ui'
-
-// Validação Zod para Pessoa
-const pessoaSchema = z.object({
-  nome: z
-    .string()
-    .min(1, 'Nome é obrigatório')
-    .max(200, 'Nome deve ter no máximo 200 caracteres'),
-  idade: z
-    .number({ invalid_type_error: 'Idade deve ser um número' })
-    .int('Idade deve ser inteira')
-    .min(0, 'Idade deve ser maior ou igual a 0'),
-})
-
-type PessoaFormData = z.infer<typeof pessoaSchema>
 
 export default function PessoaForm() {
   const { id } = useParams()
@@ -30,7 +16,7 @@ export default function PessoaForm() {
   const {
     register,
     handleSubmit,
-    reset,
+    setValue,
     formState: { errors, isSubmitting },
     setError,
   } = useForm<PessoaFormData>({
@@ -45,9 +31,13 @@ export default function PessoaForm() {
     enabled: isEditing,
   })
 
+  // Preenche os campos com os dados carregados
   useEffect(() => {
-    if (pessoa) reset({ nome: pessoa.nome, idade: pessoa.idade })
-  }, [pessoa, reset])
+    if (pessoa) {
+      setValue('nome', pessoa.nome)
+      setValue('idade', pessoa.idade)
+    }
+  }, [pessoa, setValue])
 
   const mutation = useMutation({
     mutationFn: (data: PessoaFormData) =>

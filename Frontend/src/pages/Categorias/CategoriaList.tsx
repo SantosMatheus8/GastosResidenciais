@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { categoriaApi } from '../../services/api'
-import { PageHeader, LinkButton, Button, DataTable, ErrorAlert, FinalidadeBadge, type Column } from '../../components/ui'
+import { PageHeader, LinkButton, DataTable, ErrorAlert } from '../../components/ui'
+import { getCategoriaColumns } from '../../columns'
 import ConfirmDialog from '../../components/ConfirmDialog'
-import type { Categoria } from '../../types'
 
 export default function CategoriaList() {
   const queryClient = useQueryClient()
@@ -28,21 +28,7 @@ export default function CategoriaList() {
     },
   })
 
-  const columns: Column<Categoria>[] = [
-    { header: 'Descrição', accessor: (c) => c.descricao, cellClassName: 'text-gray-900' },
-    { header: 'Finalidade', accessor: (c) => <FinalidadeBadge value={c.finalidade} /> },
-    {
-      header: 'Ações',
-      headerClassName: 'text-right',
-      cellClassName: 'text-right space-x-2',
-      accessor: (c) => (
-        <>
-          <LinkButton to={`/categorias/${c.id}/editar`} variant="ghost-primary">Editar</LinkButton>
-          <Button variant="ghost-danger" onClick={() => setDeleteId(c.id)}>Excluir</Button>
-        </>
-      ),
-    },
-  ]
+  const columns = useMemo(() => getCategoriaColumns(setDeleteId), [])
 
   return (
     <div>

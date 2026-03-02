@@ -1,4 +1,4 @@
-import { Card } from '../components/ui'
+import { Card } from '../../components/ui'
 
 // Ícones SVG para cada card do menu inicial
 const icons = {

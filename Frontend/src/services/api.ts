@@ -22,13 +22,13 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
     let message = text || `Erro ${res.status}`
     try {
       const json = JSON.parse(text)
-      if (typeof json.message === 'string') message = json.message
+      if (typeof json.error === 'string') message = json.error
+      else if (typeof json.message === 'string') message = json.message
     } catch {
     }
     throw new Error(message)
   }
 
-  // DELETE pode retornar 204 sem body
   if (res.status === 204) return undefined as T
 
   return res.json()

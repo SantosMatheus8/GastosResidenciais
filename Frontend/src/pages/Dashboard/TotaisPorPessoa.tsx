@@ -1,36 +1,14 @@
 import { useQuery } from '@tanstack/react-query'
 import { pessoaApi } from '../../services/api'
 import { formatCurrency } from '../../utils/format'
-import { PageHeader, DataTable, type Column } from '../../components/ui'
-import type { TotalPorPessoa } from '../../types'
+import { PageHeader, DataTable } from '../../components/ui'
+import { totaisPorPessoaColumns } from '../../columns'
 
 export default function TotaisPorPessoa() {
   const { data, isLoading } = useQuery({
     queryKey: ['totais-pessoa'],
     queryFn: pessoaApi.totais,
   })
-
-  const columns: Column<TotalPorPessoa>[] = [
-    { header: 'Pessoa', accessor: (i) => i.nome, cellClassName: 'font-medium text-gray-900' },
-    {
-      header: 'Total Receitas',
-      headerClassName: 'text-right',
-      cellClassName: 'text-right text-green-600',
-      accessor: (i) => formatCurrency(i.totalReceitas),
-    },
-    {
-      header: 'Total Despesas',
-      headerClassName: 'text-right',
-      cellClassName: 'text-right text-red-600',
-      accessor: (i) => formatCurrency(i.totalDespesas),
-    },
-    {
-      header: 'Saldo',
-      headerClassName: 'text-right',
-      cellClassName: (i) => `text-right font-semibold ${i.saldo >= 0 ? 'text-green-600' : 'text-red-600'}`,
-      accessor: (i) => formatCurrency(i.saldo),
-    },
-  ]
 
   // Linha de totais gerais renderizada como rodapé da tabela
   const footer = data && (
@@ -49,7 +27,7 @@ export default function TotaisPorPessoa() {
       <PageHeader title="Totais por Pessoa" />
 
       <DataTable
-        columns={columns}
+        columns={totaisPorPessoaColumns}
         data={data?.itens ?? []}
         keyExtractor={(i) => i.pessoaId}
         isLoading={isLoading}

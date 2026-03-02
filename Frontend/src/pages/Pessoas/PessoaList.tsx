@@ -1,9 +1,9 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { pessoaApi } from '../../services/api'
-import { PageHeader, LinkButton, Button, DataTable, ErrorAlert, type Column } from '../../components/ui'
+import { PageHeader, LinkButton, DataTable, ErrorAlert } from '../../components/ui'
+import { getPessoaColumns } from '../../columns'
 import ConfirmDialog from '../../components/ConfirmDialog'
-import type { Pessoa } from '../../types'
 
 export default function PessoaList() {
   const queryClient = useQueryClient()
@@ -28,22 +28,7 @@ export default function PessoaList() {
     },
   })
 
-  // Definição declarativa das colunas da tabela
-  const columns: Column<Pessoa>[] = [
-    { header: 'Nome', accessor: (p) => p.nome, cellClassName: 'text-gray-900' },
-    { header: 'Idade', accessor: (p) => p.idade, cellClassName: 'text-gray-600' },
-    {
-      header: 'Ações',
-      headerClassName: 'text-right',
-      cellClassName: 'text-right space-x-2',
-      accessor: (p) => (
-        <>
-          <LinkButton to={`/pessoas/${p.id}/editar`} variant="ghost-primary">Editar</LinkButton>
-          <Button variant="ghost-danger" onClick={() => setDeleteId(p.id)}>Excluir</Button>
-        </>
-      ),
-    },
-  ]
+  const columns = useMemo(() => getPessoaColumns(setDeleteId), [])
 
   return (
     <div>
