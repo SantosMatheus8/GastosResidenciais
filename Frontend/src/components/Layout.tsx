@@ -1,15 +1,16 @@
 import { type ReactNode, useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 
 type NavGroup = { label: string; children: { to: string; label: string }[] }
-type NavLink = { to: string; label: string }
-type NavItem = NavGroup | NavLink
+type NavLinkItem = { to: string; label: string }
+type NavItem = NavGroup | NavLinkItem
 
 function isGroup(item: NavItem): item is NavGroup {
   return 'children' in item
 }
 
 const navItems: NavItem[] = [
+  { to: '/', label: 'Início' },
   {
     label: 'Dashboard',
     children: [
@@ -48,10 +49,10 @@ export default function Layout({ children }: { children: ReactNode }) {
           sidebarOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="p-4 border-b border-gray-700">
+        <Link to="/" className="block p-4 border-b border-gray-700 hover:bg-gray-700/50 transition-colors">
           <h1 className="text-xl font-bold text-white">ResiGa</h1>
           <p className="text-xs text-gray-400">Gastos Residenciais</p>
-        </div>
+        </Link>
 
         <nav className="p-4 space-y-1">
           {navItems.map((item) =>
@@ -77,6 +78,7 @@ export default function Layout({ children }: { children: ReactNode }) {
               <NavLink
                 key={item.to}
                 to={item.to}
+                end={item.to === '/'}
                 className={linkClass}
                 onClick={() => setSidebarOpen(false)}
               >
@@ -99,7 +101,9 @@ export default function Layout({ children }: { children: ReactNode }) {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <span className="ml-3 font-semibold text-gray-800">ResiGa</span>
+          <Link to="/" className="ml-3 font-semibold text-gray-800 hover:text-indigo-600 transition-colors">
+            ResiGa
+          </Link>
         </header>
 
         <main className="flex-1 p-6 overflow-auto">{children}</main>

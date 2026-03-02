@@ -1,5 +1,6 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
+import { Routes, Route } from 'react-router-dom'
 import Layout from './components/Layout'
+import Home from './pages/Home'
 import PessoaList from './pages/Pessoas/PessoaList'
 import PessoaForm from './pages/Pessoas/PessoaForm'
 import CategoriaList from './pages/Categorias/CategoriaList'
@@ -13,8 +14,8 @@ export default function App() {
   return (
     <Layout>
       <Routes>
-        {/* Redireciona a raiz para o dashboard */}
-        <Route path="/" element={<Navigate to="/dashboard/pessoas" replace />} />
+        {/* Página inicia */}
+        <Route path="/" element={<Home />} />
 
         {/* Pessoas */}
         <Route path="/pessoas" element={<PessoaList />} />
