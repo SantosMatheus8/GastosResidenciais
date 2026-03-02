@@ -18,8 +18,14 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   })
 
   if (!res.ok) {
-    const body = await res.text()
-    throw new Error(body || `Erro ${res.status}`)
+    const text = await res.text()
+    let message = text || `Erro ${res.status}`
+    try {
+      const json = JSON.parse(text)
+      if (typeof json.message === 'string') message = json.message
+    } catch {
+    }
+    throw new Error(message)
   }
 
   // DELETE pode retornar 204 sem body
