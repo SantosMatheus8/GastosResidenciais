@@ -13,7 +13,7 @@ CREATE TABLE Categorias (
     Finalidade TINYINT           NOT NULL,
     
     CONSTRAINT PK_Categorias PRIMARY KEY (Id),
-    CONSTRAINT CK_Categorias_Finalidade CHECK (Finalidade IN (1, 2, 3))
+    CONSTRAINT CK_Categorias_Finalidade CHECK (Finalidade IN (0, 1, 2))
 );
 
 CREATE TABLE Transacoes (
@@ -28,5 +28,5 @@ CREATE TABLE Transacoes (
     CONSTRAINT FK_Transacoes_Categoria FOREIGN KEY (CategoriaId) REFERENCES Categorias(Id),
     CONSTRAINT FK_Transacoes_Pessoa    FOREIGN KEY (PessoaId)    REFERENCES Pessoas(Id) ON DELETE CASCADE,
     CONSTRAINT CK_Transacoes_Valor     CHECK (Valor > 0),
-    CONSTRAINT CK_Transacoes_Tipo      CHECK (Tipo IN (1, 2))
+    CONSTRAINT CK_Transacoes_Tipo      CHECK (Tipo IN (0, 1))
 );

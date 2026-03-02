@@ -69,5 +69,15 @@ services:
       - ConnectionStrings__Database=Server=sqlserver-popa,1433;Database=ResiGaDb;User Id=sa;Password=YourStrong!Passw0rd;TrustServerCertificate=True
     restart: unless-stopped
 
+  resiga-frontend:
+    build:
+      context: ./Frontend
+      dockerfile: Dockerfile
+    depends_on:
+      - popadin-api
+    ports:
+      - "3000:80"
+    restart: unless-stopped
+
 volumes:
   sqlserver_data:
