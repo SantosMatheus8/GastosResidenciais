@@ -1,8 +1,5 @@
 namespace ResiGa.Bkd.Infra.Queries;
 
-/// <summary>
-/// Queries SQL para operacoes CRUD da entidade Categoria.
-/// </summary>
 public static class CategoriaQueries
 {
     public const string CreateCategoria = @"
@@ -37,18 +34,10 @@ public static class CategoriaQueries
             Finalidade = @Finalidade
         WHERE Id = @CategoriaId";
 
-    /// <summary>
-    /// Deleta todas as transacoes associadas a uma categoria.
-    /// Deve ser executado ANTES de DeleteCategoria para garantir a delecao em cascata.
-    /// </summary>
     public const string DeleteTransacoesByCategoriaId = @"
         DELETE FROM Transacoes
         WHERE CategoriaId = @CategoriaId";
-
-    /// <summary>
-    /// Deleta uma categoria pelo seu Id.
-    /// IMPORTANTE: deve ser executado APOS DeleteTransacoesByCategoriaId para manter integridade.
-    /// </summary>
+        
     public const string DeleteCategoria = @"
         DELETE FROM Categorias
         WHERE Id = @CategoriaId";

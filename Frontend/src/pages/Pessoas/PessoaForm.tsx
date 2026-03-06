@@ -24,14 +24,12 @@ export default function PessoaForm() {
     defaultValues: { nome: '', idade: 0 },
   })
 
-  // Carrega dados existentes ao editar
   const { data: pessoa } = useQuery({
     queryKey: ['pessoa', id],
     queryFn: () => pessoaApi.buscar(id!),
     enabled: isEditing,
   })
 
-  // Preenche os campos com os dados carregados
   useEffect(() => {
     if (pessoa) {
       setValue('nome', pessoa.nome)

@@ -1,6 +1,5 @@
 import { Card } from '../../components/ui'
 
-// Ícones SVG para cada card do menu inicial
 const icons = {
   pessoas: (
     <svg className="w-10 h-10 text-indigo-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">

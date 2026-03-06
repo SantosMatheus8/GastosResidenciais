@@ -2,7 +2,6 @@ import { LinkButton, Button, TipoBadge, type Column } from '../components/ui'
 import { formatCurrency } from '../utils/format'
 import type { Transacao } from '../types'
 
-// Recebe mapas de lookup e callback de exclusão como parâmetros
 export function getTransacaoColumns(
   pessoaMap: Map<string, string>,
   categoriaMap: Map<string, string>,

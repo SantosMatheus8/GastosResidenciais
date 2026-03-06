@@ -8,7 +8,6 @@ interface CardProps {
   description: string
 }
 
-// Card clicável com ícone, título e descrição — usado na página inicial
 export default function Card({ to, icon, title, description }: CardProps) {
   return (
     <Link

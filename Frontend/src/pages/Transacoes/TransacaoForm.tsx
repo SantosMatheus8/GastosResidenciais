@@ -26,7 +26,6 @@ export default function TransacaoForm() {
     defaultValues: { descricao: '', valor: 0, tipo: 0, categoriaId: '', pessoaId: '' },
   })
 
-  // Observa o campo "tipo" para filtrar categorias compatíveis
   const tipoSelecionado = useWatch({ control, name: 'tipo' })
 
   const { data: transacao } = useQuery({
@@ -45,9 +44,6 @@ export default function TransacaoForm() {
     queryFn: () => categoriaApi.listar(1, 200),
   })
 
-  // Filtra categorias pela compatibilidade com o tipo selecionado:
-  // Tipo Despesa (0) → categorias com finalidade Despesa (0) ou Ambas (2)
-  // Tipo Receita (1) → categorias com finalidade Receita (1) ou Ambas (2)
   const categoriasFiltradas = useMemo(() => {
     if (!categorias?.lines) return []
     const tipo = Number(tipoSelecionado)
@@ -59,7 +55,6 @@ export default function TransacaoForm() {
     })
   }, [categorias, tipoSelecionado])
 
-  // Preenche os campos com os dados carregados na edição
   useEffect(() => {
     if (transacao) {
       setValue('descricao', transacao.descricao)

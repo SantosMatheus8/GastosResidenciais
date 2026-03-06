@@ -1,7 +1,6 @@
 import { LinkButton, Button, type Column } from '../components/ui'
 import type { Pessoa } from '../types'
 
-// Recebe setDeleteId como parâmetro pois a coluna de ações depende dele
 export function getPessoaColumns(
   setDeleteId: (id: string) => void
 ): Column<Pessoa>[] {

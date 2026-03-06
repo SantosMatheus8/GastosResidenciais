@@ -7,10 +7,7 @@ using ResiGa.Bkd.Ioc;
 
 namespace ResiGa.Bkd.Api;
 
-/// <summary>
-/// Ponto de entrada da aplicacao Web API de controle de gastos residenciais.
-/// Configura servicos (DI, CORS, Swagger, SQL Server) e middleware (excecoes, rotas).
-/// </summary>
+
 [ExcludeFromCodeCoverage]
 public static class Program
 {

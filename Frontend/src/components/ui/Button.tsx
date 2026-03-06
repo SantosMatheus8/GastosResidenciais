@@ -1,7 +1,6 @@
 import { type ButtonHTMLAttributes, type ReactNode } from 'react'
 import { Link, type To } from 'react-router-dom'
 
-// Mapa de estilos por variante do botão
 const variantStyles = {
   primary:
     'px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 disabled:opacity-50',
@@ -16,7 +15,6 @@ const variantStyles = {
 type Variant = keyof typeof variantStyles
 const baseStyle = 'text-sm font-medium transition-colors'
 
-// === Botão HTML padrão ===
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: Variant
   children: ReactNode
@@ -38,7 +36,6 @@ export function Button({
   )
 }
 
-// === Link que visualmente parece um botão (navegação React Router) ===
 interface LinkButtonProps {
   to: To
   variant?: Variant

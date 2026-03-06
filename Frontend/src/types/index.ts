@@ -1,5 +1,3 @@
-// === Enums ===
-
 export enum Finalidade {
   Despesa = 0,
   Receita = 1,
@@ -22,8 +20,6 @@ export const TipoTransacaoLabel: Record<number, string> = {
   [TipoTransacao.Receita]: 'Receita',
 }
 
-// === Entidades ===
-
 export interface Pessoa {
   id: string
   nome: string
@@ -45,8 +41,6 @@ export interface Transacao {
   pessoaId: string
 }
 
-// === Paginação ===
-
 export interface PaginatedResult<T> {
   lines: T[]
   page: number
@@ -56,8 +50,6 @@ export interface PaginatedResult<T> {
   totalItens: number
   totalPages: number
 }
-
-// === Relatórios ===
 
 export interface TotalPorPessoa {
   pessoaId: string

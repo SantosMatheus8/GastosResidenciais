@@ -6,7 +6,6 @@ interface ConfirmDialogProps {
   onCancel: () => void
 }
 
-// Modal de confirmação reutilizável (ex: confirmar exclusão)
 export default function ConfirmDialog({
   open,
   title,

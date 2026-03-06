@@ -15,7 +15,6 @@ export default function TransacaoList() {
     queryFn: () => transacaoApi.listar(),
   })
 
-  // Busca pessoas e categorias para resolver nomes na tabela
   const { data: pessoas } = useQuery({
     queryKey: ['pessoas'],
     queryFn: () => pessoaApi.listar(1, 200),
@@ -39,7 +38,6 @@ export default function TransacaoList() {
     },
   })
 
-  // Mapas para lookup rápido de nomes por ID
   const pessoaMap = useMemo(
     () => new Map(pessoas?.lines.map((p) => [p.id, p.nome]) ?? []),
     [pessoas]

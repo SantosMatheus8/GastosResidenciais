@@ -10,7 +10,6 @@ export default function TotaisPorPessoa() {
     queryFn: pessoaApi.totais,
   })
 
-  // Linha de totais gerais renderizada como rodapé da tabela
   const footer = data && (
     <tr className="bg-gray-100 font-bold">
       <td className="px-6 py-4 text-sm text-gray-900">Total Geral</td>

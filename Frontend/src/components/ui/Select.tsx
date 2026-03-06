@@ -6,8 +6,6 @@ interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   children: ReactNode
 }
 
-// Select com label e mensagem de erro integrada.
-// Usa forwardRef para compatibilidade com react-hook-form register().
 const Select = forwardRef<HTMLSelectElement, SelectProps>(
   ({ label, error, children, className = '', ...props }, ref) => (
     <div>

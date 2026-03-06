@@ -1,7 +1,6 @@
 import { type ReactNode } from 'react'
 import { FinalidadeLabel, TipoTransacaoLabel } from '../../types'
 
-// Cores associadas a cada classificação
 const colorStyles = {
   despesa: 'bg-red-100 text-red-700',
   receita: 'bg-green-100 text-green-700',
@@ -16,7 +15,6 @@ interface BadgeProps {
   className?: string
 }
 
-// Badge genérico com cor semântica
 export function Badge({ color, children, className = '' }: BadgeProps) {
   return (
     <span
@@ -27,7 +25,6 @@ export function Badge({ color, children, className = '' }: BadgeProps) {
   )
 }
 
-// Badge para exibir Finalidade da categoria (Despesa / Receita / Ambas)
 export function FinalidadeBadge({ value }: { value: number }) {
   const colorMap: Record<number, BadgeColor> = {
     0: 'despesa',
@@ -41,7 +38,6 @@ export function FinalidadeBadge({ value }: { value: number }) {
   )
 }
 
-// Badge para exibir Tipo de transação (Despesa / Receita)
 export function TipoBadge({ value }: { value: number }) {
   const colorMap: Record<number, BadgeColor> = {
     0: 'despesa',

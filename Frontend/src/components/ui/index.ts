@@ -1,4 +1,3 @@
-// Barrel export — importação centralizada dos componentes UI
 export { Button, LinkButton } from './Button'
 export { default as Input } from './Input'
 export { default as Select } from './Select'

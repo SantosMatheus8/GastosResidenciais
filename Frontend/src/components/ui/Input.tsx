@@ -5,8 +5,6 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string
 }
 
-// Input com label e mensagem de erro integrada.
-// Usa forwardRef para compatibilidade com react-hook-form register().
 const Input = forwardRef<HTMLInputElement, InputProps>(
   ({ label, error, className = '', ...props }, ref) => (
     <div>

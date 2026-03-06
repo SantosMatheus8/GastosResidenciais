@@ -2,7 +2,6 @@ interface ErrorAlertProps {
   message?: string
 }
 
-// Alerta de erro — só renderiza se houver mensagem
 export default function ErrorAlert({ message }: ErrorAlertProps) {
   if (!message) return null
 

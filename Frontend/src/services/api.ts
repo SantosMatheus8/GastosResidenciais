@@ -8,7 +8,6 @@ import type {
   TotalPorCategoria,
 } from '../types'
 
-// URL base da API — vazio usa proxy (Vite em dev, nginx em Docker)
 const BASE_URL = import.meta.env.VITE_API_URL || ''
 
 async function request<T>(path: string, options?: RequestInit): Promise<T> {
@@ -33,8 +32,6 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
 
   return res.json()
 }
-
-// === Pessoa ===
 
 export const pessoaApi = {
   listar: (page = 1, itemsPerPage = 50) =>
@@ -63,8 +60,6 @@ export const pessoaApi = {
     request<RelatorioTotais<TotalPorPessoa>>('/v1/pessoa/totais'),
 }
 
-// === Categoria ===
-
 export const categoriaApi = {
   listar: (page = 1, itemsPerPage = 50) =>
     request<PaginatedResult<Categoria>>(
@@ -91,8 +86,6 @@ export const categoriaApi = {
   totais: () =>
     request<RelatorioTotais<TotalPorCategoria>>('/v1/categoria/totais'),
 }
-
-// === Transação ===
 
 export const transacaoApi = {
   listar: (page = 1, itemsPerPage = 50) =>

@@ -1,6 +1,5 @@
 import { NavLink, Link } from 'react-router-dom'
 
-// === Tipos de itens de navegação ===
 type NavGroup = { label: string; children: { to: string; label: string }[] }
 type NavLinkItem = { to: string; label: string }
 type NavItem = NavGroup | NavLinkItem
@@ -9,7 +8,6 @@ function isGroup(item: NavItem): item is NavGroup {
   return 'children' in item
 }
 
-// Itens do menu lateral
 const navItems: NavItem[] = [
   { to: '/', label: 'Início' },
   {
@@ -24,7 +22,6 @@ const navItems: NavItem[] = [
   { to: '/transacoes', label: 'Transações' },
 ]
 
-// Classe CSS do link ativo/inativo no menu
 const linkClass = ({ isActive }: { isActive: boolean }) =>
   `block px-4 py-2 rounded-lg transition-colors ${
     isActive

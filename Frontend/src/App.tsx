@@ -14,25 +14,20 @@ export default function App() {
   return (
     <Layout>
       <Routes>
-        {/* Página inicia */}
         <Route path="/" element={<Home />} />
 
-        {/* Pessoas */}
         <Route path="/pessoas" element={<PessoaList />} />
         <Route path="/pessoas/novo" element={<PessoaForm />} />
         <Route path="/pessoas/:id/editar" element={<PessoaForm />} />
 
-        {/* Categorias */}
         <Route path="/categorias" element={<CategoriaList />} />
         <Route path="/categorias/novo" element={<CategoriaForm />} />
         <Route path="/categorias/:id/editar" element={<CategoriaForm />} />
 
-        {/* Transações */}
         <Route path="/transacoes" element={<TransacaoList />} />
         <Route path="/transacoes/novo" element={<TransacaoForm />} />
         <Route path="/transacoes/:id/editar" element={<TransacaoForm />} />
 
-        {/* Dashboard */}
         <Route path="/dashboard/pessoas" element={<TotaisPorPessoa />} />
         <Route path="/dashboard/categorias" element={<TotaisPorCategoria />} />
       </Routes>

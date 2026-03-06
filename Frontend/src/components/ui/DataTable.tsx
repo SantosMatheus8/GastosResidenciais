@@ -1,8 +1,5 @@
 import { type ReactNode } from 'react'
 
-// Definição de coluna para o DataTable.
-// cellClassName pode ser string fixa ou função que recebe a linha
-// para estilização dinâmica (ex: cor do saldo baseada no valor).
 export interface Column<T> {
   header: string
   accessor: (row: T) => ReactNode
@@ -19,8 +16,6 @@ interface DataTableProps<T> {
   footer?: ReactNode
 }
 
-// Tabela de dados genérica e reutilizável.
-// Renderiza cabeçalho, linhas de dados, estado vazio e rodapé opcional.
 export default function DataTable<T>({
   columns,
   data,

@@ -1,8 +1,5 @@
 namespace ResiGa.Bkd.Api.Dtos.Relatorios;
 
-/// <summary>
-/// DTO de resposta para totais financeiros de uma categoria.
-/// </summary>
 public class TotalPorCategoriaResponse
 {
     public Guid CategoriaId { get; set; }

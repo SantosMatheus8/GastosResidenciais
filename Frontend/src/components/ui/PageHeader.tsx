@@ -5,7 +5,6 @@ interface PageHeaderProps {
   children?: ReactNode 
 }
 
-// Cabeçalho de página com título e área de ações à direita
 export default function PageHeader({ title, children }: PageHeaderProps) {
   return (
     <div className="flex items-center justify-between mb-6">

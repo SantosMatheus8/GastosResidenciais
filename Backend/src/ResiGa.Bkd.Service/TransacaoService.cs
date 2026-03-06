@@ -10,33 +10,14 @@ using ResiGa.Bkd.Domain.Models.Categoria;
 
 namespace ResiGa.Bkd.Service;
 
-/// <summary>
-/// Servico responsavel pelas regras de negocio da entidade Transacao.
-/// Aplica validacoes de campo, regra de menor de idade e compatibilidade de categoria.
-/// Depende dos repositorios de Pessoa e Categoria para validar as regras de negocio.
-/// </summary>
 public class TransacaoService(
     ITransacaoRepository repository,
     IPessoaRepository pessoaRepository,
     ICategoriaRepository categoriaRepository,
     ILogger<TransacaoService> logger) : ITransacaoService
 {
-    /// <summary>
-    /// Tamanho maximo permitido para o campo Descricao (400 caracteres).
-    /// </summary>
     private const int DescricaoMaxLength = 400;
 
-    /// <summary>
-    /// Cria uma nova transacao apos aplicar todas as validacoes e regras de negocio.
-    ///
-    /// Validacoes aplicadas:
-    /// 1. Descricao obrigatoria, max 400 caracteres
-    /// 2. Valor deve ser positivo (maior que zero)
-    /// 3. Tipo deve ser 0 (Despesa) ou 1 (Receita)
-    /// 4. Pessoa e Categoria devem existir no banco
-    /// 5. REGRA: Pessoa menor de 18 anos so pode ter transacoes do tipo Despesa
-    /// 6. REGRA: A Categoria deve ser compativel com o Tipo da transacao
-    /// </summary>
     public async Task<Transacao> CreateTransacaoAsync(Transacao transacao)
     {
         logger.LogInformation("Criando Transacao");
@@ -47,27 +28,18 @@ public class TransacaoService(
         return await repository.CreateTransacaoAsync(transacao);
     }
 
-    /// <summary>
-    /// Lista transacoes com suporte a filtros e paginacao.
-    /// </summary>
     public async Task<PaginatedResult<Transacao>> GetTransacoesAsync(ListTransacoes listTransacoes)
     {
         logger.LogInformation("Listando Transacao");
         return await repository.GetTransacoesAsync(listTransacoes);
     }
 
-    /// <summary>
-    /// Busca uma transacao pelo Id. Lanca NotFoundException se nao encontrada.
-    /// </summary>
     public async Task<Transacao> FindTransacaoByIdAsync(Guid transacaoId)
     {
         logger.LogInformation("Buscando uma Transacao");
         return await FindTransacaoOrThrowExceptionAsync(transacaoId);
     }
 
-    /// <summary>
-    /// Atualiza uma transacao existente apos reaplicar todas as validacoes e regras de negocio.
-    /// </summary>
     public async Task<Transacao> UpdateTransacaoAsync(Transacao updateTransacaoRequest, Guid transacaoId)
     {
         logger.LogInformation("Editando uma Transacao");
@@ -87,18 +59,12 @@ public class TransacaoService(
         return await FindTransacaoOrThrowExceptionAsync(transacaoId);
     }
 
-    /// <summary>
-    /// Deleta uma transacao. Verifica se existe antes de deletar.
-    /// </summary>
     public async Task DeleteTransacaoAsync(Guid transacaoId)
     {
         await FindTransacaoOrThrowExceptionAsync(transacaoId);
         await repository.DeleteTransacaoAsync(transacaoId);
     }
 
-    /// <summary>
-    /// Busca transacao por Id ou lanca NotFoundException (404).
-    /// </summary>
     private async Task<Transacao> FindTransacaoOrThrowExceptionAsync(Guid transacaoId)
     {
         Transacao transacao = await repository.FindTransacaoByIdAsync(transacaoId);
@@ -112,13 +78,6 @@ public class TransacaoService(
         return transacao;
     }
 
-    /// <summary>
-    /// Valida os campos basicos da transacao:
-    /// - Descricao: obrigatoria, maximo 400 caracteres
-    /// - Valor: deve ser positivo (maior que zero)
-    /// - Tipo: deve ser 0 (Despesa) ou 1 (Receita)
-    /// Lanca UnprocessableEntityException (422) em caso de violacao.
-    /// </summary>
     private static void ValidarTransacao(Transacao transacao)
     {
         if (string.IsNullOrWhiteSpace(transacao.Descricao))
@@ -134,18 +93,6 @@ public class TransacaoService(
             throw new UnprocessableEntityException("O tipo da transação deve ser: 0 (Despesa) ou 1 (Receita)");
     }
 
-    /// <summary>
-    /// Valida as regras de negocio que dependem de dados do banco:
-    ///
-    /// REGRA 1 - Menor de idade:
-    ///   Se a pessoa associada tiver menos de 18 anos, apenas transacoes do tipo Despesa (0) sao permitidas.
-    ///   Isso impede que menores de idade registrem receitas no sistema.
-    ///
-    /// REGRA 2 - Compatibilidade Categoria x Tipo:
-    ///   A categoria selecionada deve ser compativel com o tipo da transacao:
-    ///   - Tipo = Despesa (0) → Categoria deve ter Finalidade = Despesa (0) ou Ambas (2)
-    ///   - Tipo = Receita (1) → Categoria deve ter Finalidade = Receita (1) ou Ambas (2)
-    /// </summary>
     private async Task ValidarRegrasDeNegocioAsync(Transacao transacao)
     {
         Pessoa pessoa = await pessoaRepository.FindPessoaByIdAsync(transacao.PessoaId);
